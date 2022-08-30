@@ -4,7 +4,7 @@ import * as twgl from "../dep/twgl.js/dist/4.x/twgl-full.module.js";
 const m4 = twgl.m4;
 twgl.setDefaults({attribPrefix: "i_"});
 
-import * as jake from "../lib/jake.js";
+import * as jake from "../lib/jake.module.js";
 
 let animFrame = null;
 
@@ -17,7 +17,7 @@ document.querySelector("input").onchange = () => {
 let numLines = 100;
 
 async function main() {
-    await jake.generateShaderScriptTags(
+    await jake.webgl.generateShaderScriptTags(
         "shaders/lines.vert",
         "shaders/lines.frag"
     );
