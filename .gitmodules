@@ -1,0 +1,6 @@
+[submodule "dep/twgl.js"]
+	path = dep/twgl.js
+	url = git@github.com:greggman/twgl.js.git
+[submodule "dep/chroma.js"]
+	path = dep/chroma.js
+	url = https://github.com/gka/chroma.js/
