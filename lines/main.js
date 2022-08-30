@@ -4,20 +4,20 @@ import * as twgl from "../dep/twgl.js/dist/4.x/twgl-full.module.js";
 const m4 = twgl.m4;
 twgl.setDefaults({attribPrefix: "i_"});
 
+import * as jake from "../lib/jake.js";
+
 let animFrame = null;
 
 window.onload = main;
-document.querySelector("input").onchange = (e) => {
+document.querySelector("input").onchange = () => {
   numLines = document.querySelector("input").valueAsNumber;
   main();
 };
 
-function rand(a,b) {return a+Math.random()*(a-b);}
-
 let numLines = 100;
 
 async function main() {
-    await generateShaderScriptTags(
+    await jake.generateShaderScriptTags(
         "shaders/lines.vert",
         "shaders/lines.frag"
     );
@@ -31,7 +31,7 @@ async function main() {
         color: twgl.primitives.createAugmentedTypedArray(3, numLines*2, Uint8Array),
     };
 
-    const hue = rand(0, 360);
+    const hue = jake.rand(0, 360);
     for (let ii = 0; ii < numLines; ii++) {
         const u = ii / numLines;
         const h = (360 + hue + (Math.abs(u - 0.5) * 100)) % 360;
@@ -96,25 +96,3 @@ async function main() {
     animFrame = requestAnimationFrame(render);
 };
 
-/**
- * Generate `<script>` tags for loading shaders with twgl.
- *
- * @param uris - A list of URIs to fetch and generate script tags from
- */
-async function generateShaderScriptTags(...uris) {
-    for (const uri of uris) {
-        const response = await fetch(uri);
-        if (response.status === 200) {
-            const source = await response.text();
-
-            let tag = document.createElement("script");
-            tag.text = source;
-            tag.type = "notjs";
-            tag.id = uri;
-
-            document.body.appendChild(tag);
-        } else {
-            throw "Could not load \"" + uri + "\"";
-        }
-    }
-}
