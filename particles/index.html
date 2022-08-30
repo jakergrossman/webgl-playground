@@ -2,8 +2,13 @@
 <html>
     <head>
         <script type="text/javascript" src="bootstrap-webgl.js"></script>
-        <script type="text/javascript" src="particles.js"></script>
+        <script type="module" src="particles.js"></script>
+        <style>
+            body { margin: 0; }
+            canvas { display: block; width: 100vw; height: 100vh; }
+        </style>
     </head>
-    <body onload="start()">
+    <body>
+        <canvas id="c"></canvas>
     </body>
 </html>

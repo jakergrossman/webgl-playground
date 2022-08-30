@@ -1,3 +1,7 @@
+"use strict";
+
+import * as twgl from "../dep/twgl.js/dist/4.x/twgl-full.module.js";
+
 function initialParticleData(numParticles, minAge, maxAge) {
     let data = [];
     for (let i = 0; i < numParticles; i++) {
@@ -26,7 +30,7 @@ function setupParticleBufferVAO(gl, buffers, vao) {
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer.bufferObject);
 
         let offset = 0;
-        for (attribName in buffer.attribs) {
+        for (const attribName in buffer.attribs) {
             if (buffer.attribs.hasOwnProperty(attribName)) {
                 /* set up vertex attribute pointers for attribs in this buffer */
                 let attribDesc = buffer.attribs[attribName];
@@ -214,6 +218,9 @@ async function createParticleSystem(
 }
 
 function updateParticles(gl, timeDelta, state) {
+    twgl.resizeCanvasToDisplaySize(gl.canvas);
+
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     let numParticles = Math.min(state.bornParticles, state.numParticles);
 
     if (state.bornParticles < state.numParticles && state.click) {
@@ -290,15 +297,14 @@ function updateParticles(gl, timeDelta, state) {
     state.write = tmp;
 }
 
-let lastAnimationFrame = null;
+window.onload = start;
 async function start() {
-    let canvas = document.createElement("canvas");
-    canvas.width = 800;
-    canvas.height = 600;
+    let canvas = document.getElementById("c");
+    // canvas.width = 800;
+    // canvas.height = 600;
     let context = canvas.getContext("webgl2");
     if (context != null) {
-        document.body.appendChild(canvas);
-        state =
+        let state =
             await createParticleSystem(
                 context,
                 10000,
@@ -309,10 +315,10 @@ async function start() {
                 2.8);
 
         canvas.onmousemove = function (e) {
-            let x = 2.0 * (e.pageX - this.offsetLeft)/this.width - 1.0;
-            let y = -(2.0 * (e.pageY - this.offsetTop)/this.height - 1.0);
+            let x = 2.0 * (e.pageX)/this.width - 1.0;
+            let y = -(2.0 * (e.pageY)/this.height - 1.0);
             if (state !== null) {
-                state.origin = [x, y];
+                state.origin = [x,y];
             }
         };
 
