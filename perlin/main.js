@@ -45,6 +45,11 @@ zSpeedControl.value = zSpeed;
 seedControl.value   = program.uniformInfo.seed;
 rgbControl.checked  = program.uniformInfo.rgb;
 
+// value repr
+const scaleDisplay = document.querySelector("#scaleControl+span");
+const zSpeedDisplay = document.querySelector("#zSpeedControl+span");
+const seedDisplay = document.querySelector("#seedControl+span");
+
 controlPane.oninput = updateParameters;
 
 /**
@@ -63,6 +68,11 @@ function updateParameters() {
         seed: parseFloat(seedControl.value),
         rgb: rgbControl.checked,
     }, false);
+
+    scaleDisplay.innerText = ("" + program.uniformInfo.scale).slice(0,5);
+    zSpeedDisplay.innerText = ("" + program.uniformInfo.zSpeed).slice(0,5);
+    seedDisplay.innerText = ("" + program.uniformInfo.seed).slice(0,5);
+    zSpeedDisplay.innerText = ("" + zSpeed).slice(0,5);
 }
 
 function draw() {

@@ -29,6 +29,7 @@ canvas {
         /* transform: scale(1.5, 2.5); */
         /* transform-origin: top left; */
         height: 100px;
+        width: 65%;
     }
 
     input[type="range"]::-webkit-slider-thumb {
@@ -118,9 +119,13 @@ canvas {
 }
 
 input {
-    width: 75%;
+    width: 68%;
     display: inline-block;
     vertical-align: middle;
+}
+
+input+span {
+    color: white;
 }
 
 label {

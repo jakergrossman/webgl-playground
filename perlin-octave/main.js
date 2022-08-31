@@ -46,6 +46,12 @@ persistenceControl.value  = program.uniformInfo.persistence;
 lacunarityControl.value  = program.uniformInfo.lacunarity;
 zSpeedControl.value = zSpeed;
 
+// value repr
+const octaveDisplay = document.querySelector("#octaveControl+span");
+const persistenceDisplay = document.querySelector("#persistenceControl+span");
+const lacunarityDisplay = document.querySelector("#lacunarityControl+span");
+const zSpeedDisplay = document.querySelector("#zSpeedControl+span");
+
 controlPane.oninput = updateParameters;
 
 function updateParameters() {
@@ -55,6 +61,11 @@ function updateParameters() {
         persistence: parseFloat(persistenceControl.value),
         lacunarity: parseFloat(lacunarityControl.value),
     }, false);
+
+    octaveDisplay.innerText = program.uniformInfo.octaves;
+    persistenceDisplay.innerText = program.uniformInfo.persistence;
+    lacunarityDisplay.innerText = program.uniformInfo.lacunarity;
+    zSpeedDisplay.innerText = zSpeed;
 }
 
 function draw() {
