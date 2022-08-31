@@ -24,7 +24,7 @@ const arrays = {
 program
     .arrays(arrays, 2)
     .uniforms({
-        scale: 30.0,
+        scale: 0.25,
         zDepth: 0.0,
         seed: jake.rand(0, 100),
         rgb: 0,
@@ -47,10 +47,19 @@ rgbControl.checked  = program.uniformInfo.rgb;
 
 controlPane.oninput = updateParameters;
 
+/**
+ * convert a scale value in the range [0, 1] to a value in the range
+ * [min, max] on the quadratic curve (min-max)x^2 + min
+ */
+function quadComp(scale, min, max) {
+    let c = (max - min) * scale * scale + min;
+    return c;
+}
+
 function updateParameters() {
     zSpeed = parseFloat(zSpeedControl.value),
     program.uniforms({
-        scale: parseFloat(scaleControl.value),
+        scale: quadComp(parseFloat(scaleControl.value), 2, 1000),
         seed: parseFloat(seedControl.value),
         rgb: rgbControl.checked,
     }, false);
@@ -77,4 +86,5 @@ function draw() {
     requestAnimationFrame(draw);
 }
 
+updateParameters();
 requestAnimationFrame(draw);
