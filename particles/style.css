@@ -1,0 +1,92 @@
+* {
+        -webkit-touch-callout: none;
+        -webkit-user-callout: none;
+        -webkit-user-select: none;
+        -webkit-user-drag: none;
+        -webkit-user-modify: none;
+        -webkit-highlight: none;
+}
+
+body {
+    font-family: "Raleway", monospace;
+    margin: 0;
+    overflow: hidden;
+    touch-action: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    background: black;
+}
+
+canvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    z-index: 0;
+}
+
+#me {
+    top: 0;
+    right: 0;
+}
+
+#how {
+    top: 0;
+    left: 0;
+}
+
+
+.blur {
+    text-align: center;
+    position: fixed;
+    margin: 0.5em;
+    padding: 10px 0 10px 0;
+    z-index: 1;
+    color: white;
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    padding: 10px 15px 10px 15px;
+}
+
+.blur a {
+    text-decoration: underline;
+    color: white;
+}
+
+.blur span {
+}
+
+/* @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none))  { */
+/*     .blur:before { */
+/*         z-index: -1; */
+/*         content: ''; */
+/*         position: absolute; */
+/*         top: 0; */
+/*         left: 0; */
+/*         right: 0; */
+/*         bottom: 0; */
+/*         backdrop-filter: blur(15px); */
+/*         -webkit-backdrop-filter: blur(15px); */
+/*         border-radius: 10px; */
+/*         background-color: rgba(0, 0, 0, 0.3); */
+/*     } */
+/* } */
+
+@media (max-width: 991.98px) {
+    #how {
+        top: 3em;
+        left: 5%;
+        right: 5%;
+    }
+
+    #me {
+        left: 5%;
+        right: 5%;
+    }
+}
+

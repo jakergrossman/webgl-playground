@@ -3,6 +3,7 @@ body {
     font-family: "Raleway";
     overflow: hidden;
     position: fixed;
+    background: black;
 }
 
 canvas { 
@@ -56,6 +57,7 @@ canvas {
         margin: 0.5em;
     }
 }
+
 #me {
     position: fixed;
     top: 0;

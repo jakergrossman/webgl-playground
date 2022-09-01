@@ -307,20 +307,29 @@ async function start() {
         let state =
             await createParticleSystem(
                 context,
-                10000,
+                500,
                 0.5,
                 1.01, 1.15,
                 Math.PI/2.0,
                 1.00,
                 2.8);
 
-        canvas.onmousemove = function (e) {
+        canvas.ontouchmove = canvas.onmousemove = function (e) {
             let x = 2.0 * (e.pageX)/this.width - 1.0;
             let y = -(2.0 * (e.pageY)/this.height - 1.0);
             if (state !== null) {
                 state.origin = [x,y];
             }
         };
+
+        canvas.ontouchstart = e => {
+            state.click = true;
+            canvas.ontouchmove(e);
+        }
+        canvas.ontouchend = e => {
+            state.click = false;
+            canvas.ontouchmove(e);
+        }
 
         canvas.onmousedown = () => { state.click = true; }
         canvas.onmouseup = () => { state.click = false; }
