@@ -1,8 +1,8 @@
 "use strict";
 
-import * as twgl from "./dep/twgl.js/dist/4.x/twgl-full.module.js";
+import * as twgl from "../dep/twgl.js/dist/4.x/twgl-full.module.js";
 twgl.setDefaults({attribPrefix: "i_"});
-import * as jake from "./lib/jake.module.js";
+import * as jake from "../lib/jake.module.js";
 
 const gl = document.getElementById("screen").getContext("webgl2");
 
