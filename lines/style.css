@@ -6,6 +6,20 @@ body {
     background-color: black;
 }
 
+.underlined {
+    transition: 0.2s ease-in-out;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    -moz-text-decoration-color: transparent;
+    -webkit-text-decoration-color: transparent;
+}
+
+.underlined:hover {
+    text-decoration-color: white;
+    -moz-text-decoration-color: white;
+    -webkit-text-decoration-color: white;
+}
+
 @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none))  {
     content:before {
         width: 100vw;
@@ -42,20 +56,6 @@ canvas {
     backdrop-filter: blur(15px);
 }
 
-@supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none))  {
-    #content:before {
-        z-index: -1;
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        backdrop-filter: blur(15px);
-        border-radius: 15px;
-    }
-}
-
 #sidebar {
     position: fixed;
     top: 0;
@@ -72,7 +72,6 @@ li:before {
 }
 
 a {
-    text-decoration: none;
     color: white;
     height: 100%;
     text-align: center;

@@ -5,6 +5,9 @@ twgl.setDefaults({attribPrefix: "i_"});
 import * as jake from "../lib/jake.module.js";
 
 const gl = document.getElementById("screen").getContext("webgl2");
+if (!gl) {
+    window.location.replace("../no-webgl");
+}
 
 const numLines = 10000;
 

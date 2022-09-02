@@ -5,7 +5,7 @@ import * as jake from "../lib/jake.module.js";
 
 const gl = document.getElementById("screen").getContext("webgl2");
 if (!gl) {
-    throw new Error("WebGL2 is not supported");
+    window.location.replace("../no-webgl");
 }
 
 // initialize WebGL2 program

@@ -22,9 +22,15 @@ canvas {
     }
 
     #me {
-        /* phone 2 smol :( */
-        display: none;
+        position: fixed;
+        bottom: 10px;
+        margin: auto 0.5em;
+        padding: 10px 0 10px 0;
+        text-align: center;
+        z-index: 1;
+        color: white;
     }
+
 
     input[type="range"] {
         /* transform: scale(1.5, 2.5); */
@@ -55,17 +61,17 @@ canvas {
         width: 25vw;
         margin: 0.5em;
     }
-}
 
-#me {
-    position: fixed;
-    top: 0;
-    right: 0;
-    margin: 0.5em;
-    padding: 10px 0 10px 0;
-    text-align: right;
-    z-index: 1;
-    color: white;
+    #me {
+        position: fixed;
+        top: 0;
+        right: 0;
+        margin: 0.5em;
+        padding: 10px 0 10px 0;
+        text-align: right;
+        z-index: 1;
+        color: white;
+    }
 }
 
 #me a {
@@ -100,7 +106,8 @@ canvas {
         left: 0;
         right: 0;
         bottom: 0;
-        backdrop-filter: blur(15px);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
         border-radius: 15px;
         background-color: rgba(0, 0, 0, 0.3);
     }
@@ -113,7 +120,8 @@ canvas {
         left: 0;
         right: 0;
         bottom: 0;
-        backdrop-filter: blur(15px);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
         border-radius: 10px;
         background-color: rgba(0, 0, 0, 0.3);
     }

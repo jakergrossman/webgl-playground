@@ -1,0 +1,102 @@
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    font-size: 1.4rem;
+    line-height: 2rem;
+    font-family: "Raleway", monospace;
+
+    overflow: hidden;
+    color: white;
+    background-color: #111;
+}
+
+#wrapper {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+span {
+    text-align: center;
+    margin: 1em 0;
+}
+
+a {
+    background-color: #FF5E79;
+    padding: 15px 35px;
+    border-radius: 5px;
+    font-size: 1.5em;
+}
+
+.underlined {
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    -moz-text-decoration-color: transparent;
+    -webkit-text-decoration-color: transparent;
+}
+
+.underlined:hover {
+    text-decoration-color: #111;
+    -moz-text-decoration-color: #111;
+    -webkit-text-decoration-color: #111;
+}
+
+.glow {
+    width: 220px;
+    height: 50px;
+    border: none;
+    outline: none;
+    color: #fff;
+    background: #111;
+    cursor: pointer;
+    position: relative;
+    z-index: 0;
+    border-radius: 10px;
+    transition: .4s ease-in-out;
+}
+
+.glow:before {
+    content: '';
+    background: linear-gradient(69deg, #432371, #5A3573, #714674, #885875, #9F6976, #B67A78, #CC8B79, #B67A78, #FAAE7B, #B67A78, #CC8B79, #B67A78, #9F6976, #885875, #714674, #5A3573, #432371);
+    position: absolute;
+    top: -2px;
+    left:-2px;
+    background-size: 400%;
+    z-index: -1;
+    filter: blur(5px);
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    animation: glowing 20s linear infinite;
+    border-radius: 10px;
+}
+
+.glow:hover {
+    color: #111;
+}
+
+.glow:hover:after {
+    opacity: 0;
+}
+
+.glow:after {
+    transition: opacity .3s ease-in-out, color .3s ease-in-out;
+    z-index: -1;
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #111;
+    left: 0;
+    top: 0;
+    border-radius: 10px;
+}
+
+@keyframes glowing {
+    0% { background-position: 0 0; }
+    50% { background-position: 400% 0; }
+    100% { background-position: 0 0; }
+}

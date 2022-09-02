@@ -303,50 +303,50 @@ async function start() {
     // canvas.width = 800;
     // canvas.height = 600;
     let context = canvas.getContext("webgl2");
-    if (context != null) {
-        let state =
-            await createParticleSystem(
-                context,
-                500,
-                0.5,
-                1.01, 1.15,
-                Math.PI/2.0,
-                1.00,
-                2.8);
-
-        canvas.ontouchmove = canvas.onmousemove = function (e) {
-            let x = 2.0 * (e.pageX)/this.width - 1.0;
-            let y = -(2.0 * (e.pageY)/this.height - 1.0);
-            if (state !== null) {
-                state.origin = [x,y];
-            }
-        };
-
-        canvas.ontouchstart = e => {
-            state.click = true;
-            canvas.ontouchmove(e);
-        }
-        canvas.ontouchend = e => {
-            state.click = false;
-            canvas.ontouchmove(e);
-        }
-
-        canvas.onmousedown = () => { state.click = true; }
-        canvas.onmouseup = () => { state.click = false; }
-        canvas.onwheel = (e) => { 
-            if (e.deltaY > 0) {
-                state.theta += Math.PI/12;
-            } else {
-                state.theta -= Math.PI/12;
-            }
-            return false;
-        }
-
-        canvas.onmouseleave = () => { state.origin = [0, 0]; };
-        window.requestAnimationFrame(async newTimestamp => {
-            await render(context, updateParticles, [state], 0.0, newTimestamp);
-        });
-    } else {
-        document.write("WebGL2 is not supported by your browser");
+    if (!context) {
+        window.location.replace("../no-webgl");
     }
+
+    let state =
+        await createParticleSystem(
+            context,
+            500,
+            0.5,
+            1.01, 1.15,
+            Math.PI/2.0,
+            1.00,
+            2.8);
+
+    canvas.ontouchmove = canvas.onmousemove = function (e) {
+        let x = 2.0 * (e.pageX)/this.width - 1.0;
+        let y = -(2.0 * (e.pageY)/this.height - 1.0);
+        if (state !== null) {
+            state.origin = [x,y];
+        }
+    };
+
+    canvas.ontouchstart = e => {
+        state.click = true;
+        canvas.ontouchmove(e);
+    }
+    canvas.ontouchend = e => {
+        state.click = false;
+        canvas.ontouchmove(e);
+    }
+
+    canvas.onmousedown = () => { state.click = true; }
+    canvas.onmouseup = () => { state.click = false; }
+    canvas.onwheel = (e) => { 
+        if (e.deltaY > 0) {
+            state.theta += Math.PI/12;
+        } else {
+            state.theta -= Math.PI/12;
+        }
+        return false;
+    }
+
+    canvas.onmouseleave = () => { state.origin = [0, 0]; };
+    window.requestAnimationFrame(async newTimestamp => {
+        await render(context, updateParticles, [state], 0.0, newTimestamp);
+    });
 }
