@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+        <link rel="stylesheet" href="style.css"></style>
+        <script type="module" src="main.js"></script>
+        <script src="https://webglfundamentals.org/webgl/resources/m3.js"></script>
+    </head>
+    <body>
+        <form id="controls" autocomplete="off">
+            <label for="iterControl">iterations</label>
+            <input id="iterControl" type="range" min="5", max="995" step="1" value=""/>
+            <span></span>
+
+            <label>scale</label>
+            <span id="scaleDisplay"></span>
+            <br>
+            <label for="animControl">animate</label>
+            <input id="animControl" type="checkbox"/>
+        </form>
+        <canvas id="screen"></canvas>
+        <div id="me">
+            <span>
+                <a href="..">
+                    jakergrossman.com
+                </a>
+                - mandelbrot
+            </span>
+        </div>
+    </body>
+</html>
