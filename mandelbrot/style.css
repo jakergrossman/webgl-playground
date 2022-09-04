@@ -145,3 +145,13 @@ label {
     display: inline-block;
     color: white;
 }
+
+hr {
+    color: white;
+    opacity: 50%;
+}
+
+#how {
+    width: 100%;
+    text-align: center;
+}

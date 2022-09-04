@@ -15,18 +15,25 @@ const controlPane  = document.getElementById("controls");
 const iterControl = controlPane.elements[0];
 const animControl = controlPane.elements[1];
 const iterDisplay = document.querySelector("#iterControl+span");
-const scaleDisplay = document.getElementById("scaleDisplay");
+const zoomDisplay = document.getElementById("zoomDisplay");
 
-let zoom = 0.8;
+/* starting values */
+let zoom = 0.45;
 let numIterations = 30;
-let screenSize = null;
+let animDirection = 1;
+
+/* limits */
+let minZoom = 0.2;
+let maxZoom = 200000;
+let minIterations = 5;
+let maxIterations = 995;
+
+/* graphics parameters */
+let screenSize = new Vector(0,0);
 let click = false;
 let center = new Vector(0, 0);
+
 let program = init();
-let minZoom = 0.2;
-let maxZoom = 200000.001;
-let animate = false;
-let animDirection = 1;
 
 requestAnimationFrame(draw);
 
@@ -35,12 +42,16 @@ function scroll(event) {
     event.preventDefault();
     const {x, y, deltaY} = event;
     const zoomFactor = Math.pow(2, Math.sign(deltaY) * -0.5);
-    const newZoom =  Math.max(minZoom, Math.min(maxZoom, zoomFactor * zoom));
+    const newZoom =  jake.clamp(zoomFactor * zoom, minZoom, maxZoom);
     const screenPos = new Vector(x, y);
-    let screenSize = new Vector(program.gl.canvas.width, program.gl.canvas.height);
-    let uv = screenPos.copy().scalar(2).sub(screenSize).scalar(1 / screenSize.y);
+
+    let uv = screenPos
+        .scalar(2)       // * 2
+        .sub(screenSize) // - [width, height]
+        .div(screenSize) // convert to clip space
+
     uv.x *= -1;
-    center.add(uv.scalar((zoom - newZoom) / (zoom * newZoom) / 2));
+    center.add(uv.scalar((zoom - newZoom) / (zoom * newZoom)));
     zoom = newZoom;
 }
 
@@ -91,6 +102,8 @@ function init() {
     controlPane.oninput = paramUpdate;
     iterControl.value = numIterations;
     iterDisplay.innerText = numIterations;
+    iterControl.min = minIterations;
+    iterControl.max = maxIterations;
     canvas.onwheel = scroll;
     canvas.onmousemove = pan;
     canvas.onmousedown = () => { click = true; }
@@ -118,17 +131,19 @@ function draw(now) {
     gl.clearColor(0.83, 0.83, 0.83, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    let text = zoom.toString();
-    scaleDisplay.innerText = text.slice(0, text.indexOf(".")+4);
+    zoomDisplay.innerText = zoom.toFixed(3);
 
     if (animControl.checked) {
-        numIterations += Math.floor(2.5 * animDirection * dt);
-        iterControl.value = numIterations;
-        paramUpdate();
-        if (numIterations < 5 || numIterations > 995) {
-            numIterations = Math.max(5, Math.min(995, numIterations));
-            animDirection *= -1;
+        numIterations += Math.floor(3.5 * dt) * animDirection;
+
+        numIterations = jake.clamp(numIterations, minIterations, maxIterations);
+        if (numIterations == minIterations) {
+            animDirection = 1;
+        } else if (numIterations == maxIterations) {
+            animDirection = -1;
         }
+
+        paramUpdate();
     }
 
     program

@@ -9,14 +9,18 @@
     <body>
         <form id="controls" autocomplete="off">
             <label for="iterControl">iterations</label>
-            <input id="iterControl" type="range" min="5", max="995" step="1" value=""/>
+            <input id="iterControl" type="range" step="1" value=""/>
             <span></span>
 
-            <label>scale</label>
-            <span id="scaleDisplay"></span>
+            <label>zoom</label>
+            <span id="zoomDisplay"></span>
             <br>
             <label for="animControl">animate</label>
             <input id="animControl" type="checkbox"/>
+
+            <hr>
+
+            <label id="how">drag to pan, mousewheel to zoom</label>
         </form>
         <canvas id="screen"></canvas>
         <div id="me">
