@@ -8,6 +8,8 @@ uniform vec2  screen;
 
 out vec4 color;
 
+#define PI 3.141592653589793
+
 int bound(vec2 pos) {
     vec2 z = vec2(0., 0.);
     for (int i = 0; i < numIterations; i++) {
@@ -23,48 +25,10 @@ int bound(vec2 pos) {
     return -1;
 }
 
-vec3 hsv2rgb(float h, float s, float v) {
-    float C = s * v;
-    float X = C * (1. - abs(mod(h / 60., 2.) - 1.));
-    float M = v - C;
-
-    float r, g, b;
-
-    if (h >= 0. && h < 60.) {
-        r = C;
-        g = X;
-        b = 0.;
-    } else if (h >= 60. && h < 120.) {
-        r = X;
-        g = C;
-        b = 0.;
-    } else if (h >= 120. && h < 180.) {
-        r = 0.;
-        g = C;
-        b = X;
-    } else if (h >= 180. && h < 240.) {
-        r = 0.;
-        g = X;
-        b = C;
-    } else if (h >= 240. && h < 300.) {
-        r = X;
-        g = 0.;
-        b = C;
-    } else {
-        r = C;
-        g = 0.;
-        b = X;
-    }
-
-    float R = (r + M);
-    float G = (g + M);
-    float B = (b + M);
-    return vec3(R, G, B);
-}
-
 /* From http://iquilezles.org/www/articles/palettes/palettes.htm */
-vec3 palette( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d )
-{  return a + b*cos( 6.28318*(c*t+d) ); }
+vec3 palette(float t, vec3 a, vec3 b, vec3 c, vec3 d) {
+    return a + b*cos(2.*PI*(c*t+d));
+}
 
 void main() {
     /* screen space in pixels, upper left is [0,0] */
@@ -98,6 +62,6 @@ void main() {
                     vec3(0.5,0.5,0.5),
                     vec3(1.0,0.7,0.4),
                     vec3(0.0,0.15,0.20)),
-                    1. - t);
+                    1.);
     }
 }

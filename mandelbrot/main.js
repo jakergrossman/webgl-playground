@@ -1,21 +1,12 @@
 "use strict";
 
-import * as twgl from "../dep/twgl.js/dist/4.x/twgl-full.module.js";
 import * as jake from "../lib/jake.module.js";
 const Vector = jake.Vector;
 
 /* TODO: mobile, couldn't get pan or zoom to work */
 if (jake.mobileCheck()) {
     jake.webgl.notSupported(false);
-    throw ""; // DO NOT CONTINUE AND FLASH
 }
-
-// initialize controls
-const controlPane  = document.getElementById("controls");
-const iterControl = controlPane.elements[0];
-const animControl = controlPane.elements[1];
-const iterDisplay = document.querySelector("#iterControl+span");
-const zoomDisplay = document.getElementById("zoomDisplay");
 
 /* starting values */
 let zoom = 0.45;
@@ -23,16 +14,17 @@ let numIterations = 30;
 let animDirection = 1;
 
 /* limits */
-let minZoom = 0.2;
-let maxZoom = 200000;
-let minIterations = 5;
-let maxIterations = 995;
+const minZoom = 0.2;
+const maxZoom = 200000;
+const minIterations = 5;
+const maxIterations = 995;
 
 /* graphics parameters */
 let screenSize = new Vector(0,0);
 let click = false;
 let center = new Vector(0, 0);
 
+let controls = null
 let program = init();
 
 requestAnimationFrame(draw);
@@ -53,15 +45,16 @@ function scroll(event) {
     uv.x *= -1;
     center.add(uv.scalar((zoom - newZoom) / (zoom * newZoom)));
     zoom = newZoom;
+    controls.zoomDisplay.innerText = zoom.toFixed(3);
 }
 
 /* handle param update */
-function paramUpdate() {
-    if (!animControl.checked) {
-        numIterations = parseInt(iterControl.value);
+function paramUpdate(readValue=true) {
+    if (readValue) {
+        numIterations = parseInt(controls.iterationsControl.value);
     }
-    iterControl.value = numIterations;
-    iterDisplay.innerText = numIterations;
+    controls.iterationsControl.value = numIterations;
+    controls.iterationsDisplay.innerText = numIterations;
 }
 
 /* handle dragging */
@@ -95,15 +88,18 @@ function init() {
         ],
     };
 
-    program
-        .arrays(arrays, 2)
+    program.arrays(arrays, 2);
 
-    /* controls */
-    controlPane.oninput = paramUpdate;
-    iterControl.value = numIterations;
-    iterDisplay.innerText = numIterations;
-    iterControl.min = minIterations;
-    iterControl.max = maxIterations;
+    controls = new jake.webgl.ControlPanel([
+        { type: "range", name: "iterations", min: minIterations, max: maxIterations, step: 1, value: numIterations },
+        { type: "info", name: "zoom", text: zoom },
+        { type: "checkbox", name: "animate" },
+        { type: "divider" },
+        { type: "label", name: "user-controls", id: "how", text: "drag to pan, mousewheel to zoom" }
+    ]).instantiate();
+
+    controls.form.oninput = paramUpdate;
+    controls.form.classList.add("frosted");
     canvas.onwheel = scroll;
     canvas.onmousemove = pan;
     canvas.onmousedown = () => { click = true; }
@@ -120,20 +116,7 @@ function draw(now) {
     const dt = now - then;
     then = now;
 
-    const gl = program.gl;
-
-    twgl.resizeCanvasToDisplaySize(gl.canvas);
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-
-    screenSize.x = gl.canvas.width;
-    screenSize.y = gl.canvas.height;
-
-    gl.clearColor(0.83, 0.83, 0.83, 1);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-
-    zoomDisplay.innerText = zoom.toFixed(3);
-
-    if (animControl.checked) {
+    if (controls.animateControl.checked) {
         numIterations += Math.floor(3.5 * dt) * animDirection;
 
         numIterations = jake.clamp(numIterations, minIterations, maxIterations);
@@ -143,11 +126,13 @@ function draw(now) {
             animDirection = -1;
         }
 
-        paramUpdate();
+        paramUpdate(false);
     }
 
     program
         .use()
+        .clear({ color: [0,0,0,1] })
+        .sizeToScreen(screenSize) /* save TO screenSize, not set FROM screenSize */
         .buffersAndAttributes()
         .uniforms({
             screen: screenSize.serialize(),
@@ -156,7 +141,7 @@ function draw(now) {
             numIterations: numIterations,
             dt: dt
         })
-        .draw(gl.TRIANGLE_STRIP)
+        .draw(program.gl.TRIANGLE_STRIP)
         .glError(err => {
             throw new Error("WebGL2 Rendering Error: " + err);
         });
