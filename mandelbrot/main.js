@@ -3,13 +3,10 @@
 import * as jake from "../lib/jake.module.js";
 const Vector = jake.Vector;
 
-/* TODO: mobile, couldn't get pan or zoom to work */
-if (jake.mobileCheck()) {
-    jake.webgl.notSupported(false);
-}
+const mobile = jake.mobileCheck();
 
 /* starting values */
-let zoom = 0.45;
+let zoom = mobile ? 0.2 : 0.45;
 let numIterations = 30;
 let animDirection = 1;
 
@@ -59,8 +56,8 @@ function paramUpdate(readValue=true) {
 }
 
 /* handle dragging */
-function pan(event) {
-    if (!click) return;
+function pan(event, force) {
+    if (!force && !click) return;
     const { movementX, movementY } = event;
     const screenPos = new Vector(movementX, movementY);
     let clipPos = screenPos.div(screenSize).scalar(2 / zoom);
@@ -109,16 +106,23 @@ function init() {
         { type: "checkbox", name: "animate" },
         { type: "button", name: "save" },
         { type: "divider" },
-        { type: "label", name: "user-controls", id: "how", text: "drag to pan, mousewheel to zoom" }
+        { type: "label", name: "user-controls", id: "how", text: "drag to pan, " + (mobile ? "pinch" : "mousewheel") + " to zoom" }
     ]).instantiate();
 
     controls.form.oninput = paramUpdate;
     controls.form.classList.add("frosted");
     controls.saveButton.onclick = savePosition;
-    canvas.onwheel = scroll;
-    canvas.onmousemove = pan;
-    canvas.onmousedown = () => { click = true; }
-    canvas.onmouseleave = canvas.onmouseup = () => { click = false; }
+
+    if (mobile) {
+        canvas.onpointerup = pointerup;
+        canvas.onpointerdown = pointerdown;
+        canvas.onpointermove = pointermove;
+    } else {
+        canvas.onwheel = scroll;
+        canvas.onmousedown = () => { click = true; }
+        canvas.onmouseleave = canvas.onmouseup = () => { click = false; }
+        canvas.onmousemove = pan;
+    }
 
     screenSize = new Vector(gl.canvas.width, gl.canvas.height);
 
@@ -138,6 +142,52 @@ function init() {
     }
 
     return program;
+}
+
+// handle mobile drag and pinch-zoom
+const touchCache = new Array();
+let prevDiff = -1;
+function pointerdown(event) {
+    touchCache.push(event);
+}
+
+function pointerup(event) {
+    const touchCachePos = touchCache.findIndex(n=>n.pointerId === event.pointerId);
+    touchCache.splice(touchCachePos, 1);
+    if (touchCache.length < 2) {
+        prevDiff = -1;
+    }
+}
+
+function pointermove(event) {
+    if (touchCache.length === 1 && event.pointerId === touchCache[0].pointerId) {
+        // drag
+        const dx = event.x - touchCache[0].x;
+        const dy = event.y - touchCache[0].y;
+
+        pan({movementX: dx, movementY: dy}, mobile);
+        touchCache[0] = event; // update cache
+    } else if (touchCache.length === 2) {
+        const touchCachePos = touchCache.findIndex(n=>n.pointerId === event.pointerId);
+
+        touchCache[touchCachePos] = event;
+
+        // zoom
+        const point1 = new Vector(touchCache[0].x, touchCache[0].y);
+        const point2 = new Vector(touchCache[1].x, touchCache[1].y);
+
+        // finger distance
+        const curDiff = Math.abs(point1.x - point2.x);
+
+        // midpoint
+        const midPoint = point1.add(point2).scalar(0.5);
+        if (prevDiff > -1 && Math.abs(prevDiff - curDiff) > 1) {
+            // bodge scroll event
+            scroll({x: midPoint.x, y: midPoint.y, deltaY: prevDiff-curDiff, preventDefault:()=>{}});
+        }
+        prevDiff = curDiff;
+ 
+    }
 }
 
 let then = 0;
