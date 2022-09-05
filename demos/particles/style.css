@@ -61,22 +61,6 @@ canvas {
 .blur span {
 }
 
-/* @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none))  { */
-/*     .blur:before { */
-/*         z-index: -1; */
-/*         content: ''; */
-/*         position: absolute; */
-/*         top: 0; */
-/*         left: 0; */
-/*         right: 0; */
-/*         bottom: 0; */
-/*         backdrop-filter: blur(15px); */
-/*         -webkit-backdrop-filter: blur(15px); */
-/*         border-radius: 10px; */
-/*         background-color: rgba(0, 0, 0, 0.3); */
-/*     } */
-/* } */
-
 @media (max-width: 991.98px) {
     #how {
         top: 3em;

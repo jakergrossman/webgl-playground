@@ -1,0 +1,13 @@
+body { 
+    margin: 0; 
+    font-family: "Raleway";
+    overflow: hidden;
+    position: fixed;
+    background: black;
+}
+
+canvas { 
+    display: block;
+    width: 100vw;
+    height: 100vh; 
+}

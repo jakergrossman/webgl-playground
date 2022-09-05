@@ -92,18 +92,19 @@ float perlin(vec3 co, float pSeed) {
 }
 
 void main() {
+    vec3 co = gl_FragCoord.xyz;
     if (rgb) {
         float rand1 = rand(vec2(seed, seed*2.));
         float rand2 = rand(vec2(rand1, rand1));
         float rand3 = rand(vec2(rand1, rand2));
 
-        float r = perlin(gl_FragCoord.xyz, rand1);
-        float g = perlin(gl_FragCoord.xyz, rand2);
-        float b = perlin(gl_FragCoord.xyz, rand3);
+        float r = perlin(co, rand1);
+        float g = perlin(co, rand2);
+        float b = perlin(co, rand3);
 
         o_fragColor = vec4(r,g,b,1.);
     } else {
-        float c = perlin(gl_FragCoord.xyz, seed);
+        float c = perlin(co, seed);
         o_fragColor = vec4(c,c,c,1.);
     }
 }

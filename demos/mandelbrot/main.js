@@ -1,6 +1,6 @@
 "use strict";
 
-import * as jake from "../lib/jake.module.js";
+import * as jake from "../../lib/jake.module.js";
 const Vector = jake.Vector;
 
 const mobile = jake.mobileCheck();

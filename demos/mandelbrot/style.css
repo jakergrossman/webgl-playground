@@ -1,0 +1,27 @@
+* {
+        -webkit-touch-callout: none;
+        -webkit-user-callout: none;
+        -webkit-user-select: none;
+        -webkit-user-drag: none;
+        -webkit-user-modify: none;
+        -webkit-highlight: none;
+}
+
+body { 
+    margin: 0; 
+    font-family: "Raleway";
+    overflow: hidden;
+    position: fixed;
+    background: black;
+    touch-action: none;
+}
+
+canvas { 
+    display: block;
+    width: 100vw;
+    height: 100vh; 
+}
+
+canvas:active {
+    cursor: move;
+}

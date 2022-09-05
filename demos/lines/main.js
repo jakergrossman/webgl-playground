@@ -1,17 +1,17 @@
 "use strict";
 
-import * as twgl from "../dep/twgl.js/dist/4.x/twgl-full.module.js";
+import * as twgl from "../../dep/twgl.js/dist/4.x/twgl-full.module.js";
 twgl.setDefaults({attribPrefix: "i_"});
-import * as jake from "../lib/jake.module.js";
+import * as jake from "../../lib/jake.module.js";
 
 const gl = document.getElementById("screen").getContext("webgl2");
 if (!gl) {
-    window.location.replace("../no-webgl");
+    jake.webgl.notSupported();
 }
 
 const numLines = 10000;
 
-const shaders = [ "lines/shaders/lines.vert", "lines/shaders/lines.frag" ];
+const shaders = [ "demos/lines/shaders/lines.vert", "demos/lines/shaders/lines.frag" ];
 const program = new jake.webgl.Program(gl, ...shaders);
 
 const arrays = {

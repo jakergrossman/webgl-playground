@@ -1,6 +1,6 @@
 "use strict";
 
-import * as twgl from "../dep/twgl.js/dist/4.x/twgl-full.module.js";
+import * as twgl from "../../dep/twgl.js/dist/4.x/twgl-full.module.js";
 
 function initialParticleData(numParticles, minAge, maxAge) {
     let data = [];
