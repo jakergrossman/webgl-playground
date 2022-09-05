@@ -50,6 +50,11 @@ canvas:active {
         justify-content: center;
     }
 
+    #copy {
+        font-size: 1rem;
+        left: 35%;
+    }
+
     #me.frosted:before {
         left: 5%;
         right: 5%;
@@ -80,6 +85,10 @@ canvas:active {
         text-align: right;
         z-index: 1;
         color: white;
+    }
+
+    #copy {
+        left: 50%;
     }
 }
 
@@ -113,17 +122,9 @@ canvas:active {
 
 @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none))  {
     .frosted {
-        z-index: -1;
-        /* content: ''; */
-        /* position: absolute; */
-        /* top: 0; */
-        /* left: 0; */
-        /* right: 0; */
-        /* bottom: 0; */
         backdrop-filter: blur(15px);
         -webkit-backdrop-filter: blur(15px);
         border-radius: 10px;
-        /* background-color: rgba(0, 0, 0, 0.3); */
     }
 }
 
@@ -184,7 +185,6 @@ input[type="button"]:active {
 
 #copy {
     position: fixed;
-    left: 50%;
     top: 50%;
     color: white;
     background-color: rgba(0, 0, 0, 0.4);

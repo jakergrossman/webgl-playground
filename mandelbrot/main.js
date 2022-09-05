@@ -21,9 +21,10 @@ let screenSize = new Vector(0,0);
 let click = false;
 let center = new Vector(0, 0);
 
+const copyIndicator = document.getElementById("copy");
+
 let controls = null
 let program = init();
-const copyIndicator = document.getElementById("copy");
 
 requestAnimationFrame(draw);
 
@@ -70,7 +71,9 @@ function savePosition() {
     const URI = window.location.toString().slice(0, window.location.toString().indexOf("?"));
 
     const newURI = encodeURI(URI + "?x=" + center.x + "&y=" + center.y + "&zoom=" + zoom + "&numIterations=" + numIterations);
-    navigator.clipboard.writeText(newURI);
+    if (!mobile) {
+        navigator.clipboard.writeText(newURI);
+    }
     window.history.pushState("", "", newURI);
 
     copyIndicator.classList.remove("hidden");
@@ -122,6 +125,10 @@ function init() {
         canvas.onmousedown = () => { click = true; }
         canvas.onmouseleave = canvas.onmouseup = () => { click = false; }
         canvas.onmousemove = pan;
+    }
+
+    if (mobile) {
+        copyIndicator.innerText = "Copied to URL";
     }
 
     screenSize = new Vector(gl.canvas.width, gl.canvas.height);
