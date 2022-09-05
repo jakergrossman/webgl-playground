@@ -42,7 +42,7 @@ controls.form.oninput = updateParameters;
 
 function updateParameters() {
     zspeed = parseFloat(controls.zspeedControl.value),
-    program.uniforms(controls.values());
+    program.uniforms(controls.values(), false);
 
     controls.octavesDisplay.innerText = program.uniformInfo.octaves;
     controls.persistenceDisplay.innerText = program.uniformInfo.persistence;
