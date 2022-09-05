@@ -147,6 +147,7 @@ function init() {
 // handle mobile drag and pinch-zoom
 const touchCache = new Array();
 let prevDiff = -1;
+let mobileDebounce = 0;
 function pointerdown(event) {
     touchCache.push(event);
 }
@@ -156,6 +157,7 @@ function pointerup(event) {
     touchCache.splice(touchCachePos, 1);
     if (touchCache.length < 2) {
         prevDiff = -1;
+        mobileDebounce = 0;
     }
 }
 
@@ -178,15 +180,16 @@ function pointermove(event) {
 
         // finger distance
         const curDiff = Math.abs(point1.x - point2.x);
+        const diffDiff = prevDiff - curDiff;
 
         // midpoint
         const midPoint = point1.add(point2).scalar(0.5);
-        if (prevDiff > -1 && Math.abs(prevDiff - curDiff) > 1) {
+        if (mobileDebounce === 0 && prevDiff > -1) {
             // bodge scroll event
-            scroll({x: midPoint.x, y: midPoint.y, deltaY: prevDiff-curDiff, preventDefault:()=>{}});
+            scroll({x: midPoint.x, y: midPoint.y, deltaY: diffDiff, preventDefault:()=>{}});
         }
         prevDiff = curDiff;
- 
+        mobileDebounce = (++mobileDebounce) % 3;
     }
 }
 

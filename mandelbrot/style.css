@@ -127,8 +127,8 @@ canvas:active {
     }
 }
 
-input {
-    /* width: 68%; */
+input:not([type="checkbox"]) {
+    width: 60%;
     display: inline-block;
     vertical-align: middle;
 }
