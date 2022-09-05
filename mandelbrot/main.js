@@ -26,6 +26,7 @@ let center = new Vector(0, 0);
 
 let controls = null
 let program = init();
+const copyIndicator = document.getElementById("copy");
 
 requestAnimationFrame(draw);
 
@@ -67,6 +68,18 @@ function pan(event) {
     center.sub(clipPos);
 }
 
+/* save position and redirect */
+function savePosition() {
+    const URI = window.location.toString().slice(0, window.location.toString().indexOf("?"));
+
+    const newURI = encodeURI(URI + "?x=" + center.x + "&y=" + center.y + "&zoom=" + zoom + "&numIterations=" + numIterations);
+    navigator.clipboard.writeText(newURI);
+    window.history.pushState("", "", newURI);
+
+    copyIndicator.classList.remove("hidden");
+    copyIndicator.style.opacity=1.0;
+}
+
 /* initialize shader program, controls */
 function init() {
     const canvas = document.getElementById("screen");
@@ -94,18 +107,35 @@ function init() {
         { type: "range", name: "iterations", min: minIterations, max: maxIterations, step: 1, value: numIterations },
         { type: "info", name: "zoom", text: zoom },
         { type: "checkbox", name: "animate" },
+        { type: "button", name: "save" },
         { type: "divider" },
         { type: "label", name: "user-controls", id: "how", text: "drag to pan, mousewheel to zoom" }
     ]).instantiate();
 
     controls.form.oninput = paramUpdate;
     controls.form.classList.add("frosted");
+    controls.saveButton.onclick = savePosition;
     canvas.onwheel = scroll;
     canvas.onmousemove = pan;
     canvas.onmousedown = () => { click = true; }
     canvas.onmouseleave = canvas.onmouseup = () => { click = false; }
 
     screenSize = new Vector(gl.canvas.width, gl.canvas.height);
+
+    const queryVars = jake.getQueryVariables();
+    if (queryVars.x && queryVars.y && parseFloat(queryVars.x) != NaN && parseFloat(queryVars.y) != NaN) {
+        center = new Vector(parseFloat(queryVars.x), parseFloat(queryVars.y));
+    }
+
+    if (queryVars.zoom && parseFloat(queryVars.zoom) != NaN) {
+        zoom = parseFloat(queryVars.zoom);
+        controls.zoomDisplay.innerText = zoom.toFixed(3);
+    }
+
+    if (queryVars.numIterations && parseInt(queryVars.numIterations) != NaN) {
+        numIterations = parseInt(queryVars.numIterations);
+        paramUpdate(false);
+    }
 
     return program;
 }
@@ -127,6 +157,17 @@ function draw(now) {
         }
 
         paramUpdate(false);
+    }
+
+    /* handle copy indicator fade */
+    if (!copyIndicator.classList.contains("hidden")) {
+        const currentOpacity = parseFloat(copyIndicator.style.opacity);
+        const newOpacity = currentOpacity * Math.pow(0.97, dt);
+        copyIndicator.style.opacity = newOpacity;
+
+        if (newOpacity < 0.01) {
+            copyIndicator.classList.add("hidden");
+        }
     }
 
     program

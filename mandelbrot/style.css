@@ -163,3 +163,31 @@ form div {
     align-items: center;
     justify-content: start;
 }
+
+input[type="button"] {
+    margin-top: 5px;
+    background: rgba(255, 255, 255, 0.3);
+    border: none;
+    border-radius: 5px;
+    color: white;
+}
+
+input[type="button"]:active {
+    background: rgba(0.0625, 0.0625, 0.0625, 0.4);
+}
+
+#copy {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 10px 15px 10px 15px;
+    border-radius: 10px;
+    user-select: none;
+    pointer-events: none;
+}
+
+.hidden {
+    display: none;
+}
