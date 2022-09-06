@@ -26,6 +26,18 @@ canvas:active {
     cursor: move;
 }
 
+@media(max-width: 991.98px) {
+    #warning {
+        font-size: 0.74em;
+    }
+}
+
+@media(min-width: 992px) {
+    #warning {
+        font-size: 3em;
+    }
+}
+
 #warning {
     position: absolute;
     top: 0;
@@ -36,8 +48,6 @@ canvas:active {
     width: 100vw;
     height: 100vh;
     color: white;
-
-    font-size: 3em;
 
     background-color: rgba(0, 0, 0, 1);
 
