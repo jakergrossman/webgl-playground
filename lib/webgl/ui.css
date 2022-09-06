@@ -31,6 +31,7 @@ form div {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    line-height: 1.75em;
 }
 
 @media (max-width: 991.98px) {

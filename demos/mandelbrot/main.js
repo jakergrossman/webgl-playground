@@ -8,32 +8,27 @@ const mobile = jake.mobileCheck();
 const defaults = {
     zoom: mobile ? 0.2 : 0.45,
     numIterations: 30,
+    order: 2,
     center: new Vector(0, 0),
-    smoothcolor: false,
 };
 
 /* starting values */
-let zoom = defaults.zoom;
-let numIterations = defaults.numIterations;
+let { zoom, numIterations, order, center } = defaults;
 let animDirection = 1;
+let click = false;
 
-/* limits */
+/* control limits */
 const minZoom = 0.2;
 const maxZoom = 200000;
 const minIterations = 5;
 const maxIterations = 995;
+const minOrder = 2;
+const maxOrder = 20;
 
-/* graphics parameters */
-let screenSize = new Vector(0,0);
-let click = false;
-let center = defaults.center.copy();
-
+/* global state */
 const copyIndicator = document.getElementById("copy");
-
 let controls = null
 let program = init();
-
-requestAnimationFrame(draw);
 
 /* handle mousewheel actions */
 function scroll(event) {
@@ -45,8 +40,8 @@ function scroll(event) {
 
     let uv = screenPos
         .scalar(2)       // * 2
-        .sub(screenSize) // - [width, height]
-        .div(screenSize) // convert to clip space
+        .sub(program.screenSize) // - [width, height]
+        .div(program.screenSize) // convert to clip space
 
     uv.x *= -1;
     center.add(uv.scalar((zoom - newZoom) / (zoom * newZoom)));
@@ -58,9 +53,10 @@ function scroll(event) {
 function paramUpdate(readValue=true) {
     if (readValue) {
         numIterations = parseInt(controls.iterationsControl.value);
+        order = parseFloat(controls.orderControl.value);
     }
     controls.iterationsControl.value = numIterations;
-    controls.iterationsDisplay.innerText = numIterations;
+    controls.iterationsDisplay.value = numIterations;
 }
 
 /* handle dragging */
@@ -68,27 +64,25 @@ function pan(event, force) {
     if (!force && !click) return;
     const { movementX, movementY } = event;
     const screenPos = new Vector(movementX, movementY);
-    let clipPos = screenPos.div(screenSize).scalar(2 / zoom);
+    let clipPos = screenPos.div(program.screenSize).scalar(2 / zoom);
     clipPos.y *= -1;
     center.sub(clipPos);
 }
 
 /* save position and redirect */
 function save() {
-    let qPos = window.location.toString().indexOf("?");
-    let URI = window.location.toString();
-    if (qPos != -1) URI = URI.slice(0, qPos);
-    URI += "?x=" + center.x;
-    URI += "&y=" + center.y;
-    URI += "&zoom=" + zoom;
-    URI += "&numIterations=" + numIterations;
-    URI += "&smoothcolor=" + controls.smoothcolorControl.checked;
+    const URI = encodeURI(jake.createQueryURI({
+        x: center.x,
+        y: center.y,
+        order: order,
+        zoom: zoom,
+        numIterations: numIterations,
+    }));
 
-    const newURI = encodeURI(URI);
     if (!mobile) {
-        navigator.clipboard.writeText(newURI);
+        navigator.clipboard.writeText(URI);
     }
-    window.history.pushState("", "", newURI);
+    window.history.pushState("", "", URI);
 
     copyIndicator.classList.remove("hidden");
     copyIndicator.style.opacity=1.0;
@@ -103,6 +97,11 @@ function loadFromURI(settings) {
         center = defaults.center.copy();
     }
 
+    const orderVal = parseInt(settings.order);
+    order = orderVal ? orderVal : defaults.order;
+    controls.orderControl.value = order;
+    controls.orderDisplay.value = order;
+
     const zoomVal = parseFloat(settings.zoom);
     zoom = zoomVal ? zoomVal : defaults.zoom;
     controls.zoomDisplay.value = zoom;
@@ -111,9 +110,6 @@ function loadFromURI(settings) {
     numIterations = iterVal ? iterVal : defaults.numIterations;
     controls.iterationsControl.value = numIterations;
     controls.iterationsDisplay.value = numIterations;
-
-    const smoothcolor = settings.smoothcolor;
-    controls.smoothcolorControl.checked = smoothcolor ? smoothcolor : defaults.smoothcolor;
 }
 
 /* initialize shader program, controls */
@@ -141,9 +137,9 @@ function init() {
 
     controls = new jake.webgl.ControlPanel([
         { type: "range", name: "iterations", min: minIterations, max: maxIterations, step: 1, value: numIterations },
+        { type: "range", name: "order", min: minOrder, max: maxOrder, step: 1, value: minOrder },
         { type: "info", name: "zoom", text: zoom },
         { type: "checkbox", name: "animate" },
-        { type: "checkbox", name: "smoothcolor" },
         { type: "divider" },
         { type: "button", name: "save" },
         { type: "button", name: "reset" },
@@ -176,8 +172,6 @@ function init() {
     if (mobile) {
         copyIndicator.innerText = "Copied to URL";
     }
-
-    screenSize = new Vector(gl.canvas.width, gl.canvas.height);
 
     loadFromURI(jake.getQueryVariables());
 
@@ -266,15 +260,14 @@ function draw(now) {
     program
         .use()
         .clear({ color: [0,0,0,1] })
-        .sizeToScreen(screenSize) /* save TO screenSize, not set FROM screenSize */
+        .sizeToScreen()
         .buffersAndAttributes()
         .uniforms({
-            screen: screenSize.serialize(),
+            screen: program.screenSize.serialize(),
             center: center.serialize(),
+            order: order,
             zoom: zoom,
             numIterations: numIterations,
-            smoothcolor: controls.smoothcolorControl.checked,
-            dt: dt
         })
         .draw(program.gl.TRIANGLE_STRIP)
         .glError(err => {
@@ -283,3 +276,5 @@ function draw(now) {
 
     requestAnimationFrame(draw);
 }
+
+requestAnimationFrame(draw);

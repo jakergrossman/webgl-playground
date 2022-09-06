@@ -5,21 +5,40 @@ uniform int   numIterations;
 uniform float zoom;
 uniform vec2  center;
 uniform vec2  screen;
-uniform bool  smoothcolor;
+uniform float order;
 
 out vec4 color;
 
 #define PI 3.141592653589793
 
-vec2 z;
-int mandelbrot(vec2 pos) {
-    float bound = (smoothcolor ? 64. : 2.);
-    for (int i = 0; i < numIterations; i++) {
-        z = vec2(
-            z.x*z.x - z.y*z.y + pos.x,
-            2. * z.x*z.y + pos.y);
+/* https://math.stackexchange.com/questions/534695/raising-a-complex-number-to-a-decimal-value */
+vec2 cpow(vec2 base, float n) {
+    float r = length(base);
+    float theta = r == 0.0 ? 0.0 : atan(base.y, base.x);
+    return vec2(
+            cos(n * theta) * pow(r, n),
+            sin(n * theta) * pow(r, n));
+}
 
-        if (dot(z,z) > bound*bound) {
+int mandelbrot(vec2 pos) {
+    // skip some computation inside first period component
+    // section: internal bound
+    // https://iquilezles.org/articles/mset1bulb/
+    float l = dot(pos, pos);
+    float a = (1.0 / pow(order, 1.0 / (order - 1.0)));
+    float b = (1.0 / pow(order, order / (order - 1.0)));
+    float r = a - b;
+    if (dot(pos, pos) < r*r) return -1;
+
+    // section: external bound
+    // https://iquilezles.org/articles/mset1bulb/
+    float Q = pow(2.0, 1.0 / (order-1.0));
+
+    vec2 z;
+    for (int i = 0; i < numIterations; i++) {
+        z = cpow(z, order) + pos;
+
+        if (dot(z,z) > Q*Q) {
             return i;
         }
     }
@@ -29,7 +48,7 @@ int mandelbrot(vec2 pos) {
 
 /* From http://iquilezles.org/www/articles/palettes/palettes.htm */
 vec3 palette(float t, vec3 a, vec3 b, vec3 c, vec3 d) {
-    return a + b*cos(2.*PI*(c*t+d));
+    return a + b*cos(2.0*PI*(c*t+d));
 }
 
 void main() {
@@ -40,7 +59,7 @@ void main() {
     vec2 norm = co / screen;
 
     /* clip space from [-1, 1), center of screen is [0, 0] */
-    vec2 clip = 2. * norm - 1.;
+    vec2 clip = 2.0 * norm - 1.0;
 
     /* zoom is inverse of scale */
     clip /= zoom;
@@ -54,20 +73,15 @@ void main() {
 
     int iterations = mandelbrot(transform);
     if (iterations == -1) {
-        color = vec4(0., 0., 0., 1.);
+        color = vec4(0.0625, 0.0625, 0.0625, 1.0);
     } else {
-        float t = float(iterations);
-        if (smoothcolor) {
-            float s = t - log2(log2(dot(z, z))) + 4.0;
-            float a = smoothstep(-0.1, 0.0, sin(0.5 * 2.0 * PI));
-            t = mix(t, s, a);
-        }
+        float t = float(iterations) / float(numIterations);
         color = vec4(
-            palette(t / float(numIterations),
+            palette(t,
                     vec3(0.5,0.5,0.5),
                     vec3(0.5,0.5,0.5),
                     vec3(1.0,0.7,0.4),
                     vec3(0.0,0.15,0.20)),
-                    1.);
+                    1.0);
     }
 }

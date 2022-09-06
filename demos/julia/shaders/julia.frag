@@ -57,7 +57,6 @@ void main() {
     } else {
         float t = float(iterations) / float(numIterations);
         color = vec4(
-            /* palette(t, */
             palette(1. / 0.077426 * exp(2.558427 * t),
                     vec3(0.5,0.5,0.5),
                     vec3(0.5,0.5,0.5),
