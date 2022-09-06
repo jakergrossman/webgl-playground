@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Mandelbrot Explorer</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+        <link rel="stylesheet" href="../../lib/webgl/ui.css"></style>
+        <link rel="stylesheet" href="style.css"></style>
+        <script type="module" src="main.js"></script>
+    </head>
+    <body>
+        <canvas id="screen"></canvas>
+        <div id="warning">
+            WARNING: THIS DEMO MAY PRODUCE RAPIDLY FLASHING COLORS IF NUMITERATIONS IS CHANGED QUICKLY
+            <div id="warning-button">
+                X
+            </div>
+        </div>
+        <div class="frosted hidden" id="copy">Copied</div>
+        <div id="me">
+            <span class="frosted" >
+                <a href="../..">
+                    jakergrossman.com
+                </a>
+                - julia (z<sup>2</sup>+c)
+            </span>
+        </div>
+    </body>
+</html>

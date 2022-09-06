@@ -14,7 +14,7 @@ form {
     top: 0;
     left: 0;
 
-    z-index: 999;
+    z-index: 900;
     padding: 10px 15px 10px 15px;
     border-radius: 10px;
     border-color: black;
@@ -129,6 +129,24 @@ input[type="range"] {
     width: 60%;
     display: inline-block;
     vertical-align: middle;
+}
+
+input[type="number"] {
+    background: none;
+    border: none;
+    font-family: "Raleway", monospace;
+    text-align: right;
+    color: white;
+    padding: 5px;
+    font-size: 1rem;
+    max-width: 20%;
+    -moz-appearance: textfield;
+}
+
+input::-webkit-inner-spin-button,
+input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 form span {

@@ -1,0 +1,57 @@
+* {
+        -webkit-touch-callout: none;
+        -webkit-user-callout: none;
+        -webkit-user-select: none;
+        -webkit-user-drag: none;
+        -webkit-user-modify: none;
+        -webkit-highlight: none;
+}
+
+body { 
+    margin: 0; 
+    font-family: "Raleway";
+    overflow: hidden;
+    position: fixed;
+    background: black;
+    touch-action: none;
+}
+
+canvas { 
+    display: block;
+    width: 100vw;
+    height: 100vh; 
+}
+
+canvas:active {
+    cursor: move;
+}
+
+#warning {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999;
+    width: 100vw;
+    height: 100vh;
+    color: white;
+
+    font-size: 3em;
+
+    background-color: rgba(0, 0, 0, 1);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#warning-button {
+    position: absolute;
+    top: 5px;
+    right: 20px;
+    color: white;
+    cursor: pointer;
+}
