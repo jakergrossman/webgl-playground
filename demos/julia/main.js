@@ -65,8 +65,10 @@ function pan(event, force) {
 }
 
 /* save position and redirect */
-function savePosition() {
-    let URI = window.location.toString().slice(0, window.location.toString().indexOf("?"));
+function save() {
+    let qPos = window.location.toString().indexOf("?");
+    let URI = window.location.toString();
+    if (qPos != -1) URI = URI.slice(0, qPos);
     URI += "?x=" + center.x;
     URI += "&y=" + center.y;
     URI += "&zoom=" + zoom;
@@ -85,7 +87,6 @@ function savePosition() {
 }
 
 function loadFromURI(settings) {
-    console.log(settings);
     const { x, y, creal, cimag } = settings;
     const xVal = parseFloat(x), yVal = parseFloat(y);
     if (xVal && yVal) {
@@ -157,7 +158,7 @@ function init() {
     controls.crealDisplay.addEventListener("input", () => complex.x = controls.crealControl.value);
     controls.cimagDisplay.addEventListener("input", () => complex.y = controls.cimagControl.value);
     controls.form.classList.add("frosted");
-    controls.saveButton.onclick = savePosition;
+    controls.saveButton.onclick = save;
     controls.resetButton.onclick = () => {
         const qPos = window.location.toString().indexOf("?");
         if (qPos !== -1) {

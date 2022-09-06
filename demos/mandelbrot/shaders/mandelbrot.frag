@@ -5,19 +5,21 @@ uniform int   numIterations;
 uniform float zoom;
 uniform vec2  center;
 uniform vec2  screen;
+uniform bool  smoothcolor;
 
 out vec4 color;
 
 #define PI 3.141592653589793
 
-int bound(vec2 pos) {
-    vec2 z = vec2(0., 0.);
+vec2 z;
+int mandelbrot(vec2 pos) {
+    float bound = (smoothcolor ? 64. : 2.);
     for (int i = 0; i < numIterations; i++) {
         z = vec2(
             z.x*z.x - z.y*z.y + pos.x,
             2. * z.x*z.y + pos.y);
 
-        if (length(z) > 2.) {
+        if (dot(z,z) > bound*bound) {
             return i;
         }
     }
@@ -50,14 +52,18 @@ void main() {
      * in y-direction occupy the same screen space */
     vec2 transform = (clip + center) * vec2(aspect, 1.0);
 
-    int iterations = bound(transform);
+    int iterations = mandelbrot(transform);
     if (iterations == -1) {
         color = vec4(0., 0., 0., 1.);
     } else {
-        float t = float(iterations) / float(numIterations);
-        /* color = vec4(hsv2rgb(t*360., 1., 1.), 1.); */
+        float t = float(iterations);
+        if (smoothcolor) {
+            float s = t - log2(log2(dot(z, z))) + 4.0;
+            float a = smoothstep(-0.1, 0.0, sin(0.5 * 2.0 * PI));
+            t = mix(t, s, a);
+        }
         color = vec4(
-            palette(t,
+            palette(t / float(numIterations),
                     vec3(0.5,0.5,0.5),
                     vec3(0.5,0.5,0.5),
                     vec3(1.0,0.7,0.4),

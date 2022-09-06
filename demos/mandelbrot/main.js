@@ -5,9 +5,16 @@ const Vector = jake.Vector;
 
 const mobile = jake.mobileCheck();
 
+const defaults = {
+    zoom: mobile ? 0.2 : 0.45,
+    numIterations: 30,
+    center: new Vector(0, 0),
+    smoothcolor: false,
+};
+
 /* starting values */
-let zoom = mobile ? 0.2 : 0.45;
-let numIterations = 30;
+let zoom = defaults.zoom;
+let numIterations = defaults.numIterations;
 let animDirection = 1;
 
 /* limits */
@@ -19,7 +26,7 @@ const maxIterations = 995;
 /* graphics parameters */
 let screenSize = new Vector(0,0);
 let click = false;
-let center = new Vector(0, 0);
+let center = defaults.center.copy();
 
 const copyIndicator = document.getElementById("copy");
 
@@ -67,10 +74,17 @@ function pan(event, force) {
 }
 
 /* save position and redirect */
-function savePosition() {
-    const URI = window.location.toString().slice(0, window.location.toString().indexOf("?"));
+function save() {
+    let qPos = window.location.toString().indexOf("?");
+    let URI = window.location.toString();
+    if (qPos != -1) URI = URI.slice(0, qPos);
+    URI += "?x=" + center.x;
+    URI += "&y=" + center.y;
+    URI += "&zoom=" + zoom;
+    URI += "&numIterations=" + numIterations;
+    URI += "&smoothcolor=" + controls.smoothcolorControl.checked;
 
-    const newURI = encodeURI(URI + "?x=" + center.x + "&y=" + center.y + "&zoom=" + zoom + "&numIterations=" + numIterations);
+    const newURI = encodeURI(URI);
     if (!mobile) {
         navigator.clipboard.writeText(newURI);
     }
@@ -78,6 +92,28 @@ function savePosition() {
 
     copyIndicator.classList.remove("hidden");
     copyIndicator.style.opacity=1.0;
+}
+
+function loadFromURI(settings) {
+    const { x, y } = settings;
+    const xVal = parseFloat(x), yVal = parseFloat(y);
+    if (xVal && yVal) {
+        center = new Vector(xVal, yVal);
+    } else {
+        center = defaults.center.copy();
+    }
+
+    const zoomVal = parseFloat(settings.zoom);
+    zoom = zoomVal ? zoomVal : defaults.zoom;
+    controls.zoomDisplay.value = zoom;
+
+    const iterVal = parseFloat(settings.numIterations);
+    numIterations = iterVal ? iterVal : defaults.numIterations;
+    controls.iterationsControl.value = numIterations;
+    controls.iterationsDisplay.value = numIterations;
+
+    const smoothcolor = settings.smoothcolor;
+    controls.smoothcolorControl.checked = smoothcolor ? smoothcolor : defaults.smoothcolor;
 }
 
 /* initialize shader program, controls */
@@ -107,14 +143,24 @@ function init() {
         { type: "range", name: "iterations", min: minIterations, max: maxIterations, step: 1, value: numIterations },
         { type: "info", name: "zoom", text: zoom },
         { type: "checkbox", name: "animate" },
+        { type: "checkbox", name: "smoothcolor" },
+        { type: "divider" },
         { type: "button", name: "save" },
+        { type: "button", name: "reset" },
         { type: "divider" },
         { type: "label", name: "user-controls", id: "how", text: "drag to pan, " + (mobile ? "pinch" : "mousewheel") + " to zoom" }
     ]).instantiate();
 
     controls.form.oninput = paramUpdate;
     controls.form.classList.add("frosted");
-    controls.saveButton.onclick = savePosition;
+    controls.saveButton.onclick = save;
+    controls.resetButton.onclick = () => {
+        const qPos = window.location.toString().indexOf("?");
+        if (qPos !== -1) {
+            window.history.pushState("", "", window.location.toString().slice(0, qPos ));
+        }
+        loadFromURI(jake.getQueryVariables());
+    }
 
     if (mobile) {
         canvas.onpointerup = pointerup;
@@ -133,20 +179,7 @@ function init() {
 
     screenSize = new Vector(gl.canvas.width, gl.canvas.height);
 
-    const queryVars = jake.getQueryVariables();
-    if (queryVars.x && queryVars.y && parseFloat(queryVars.x) != NaN && parseFloat(queryVars.y) != NaN) {
-        center = new Vector(parseFloat(queryVars.x), parseFloat(queryVars.y));
-    }
-
-    if (queryVars.zoom && parseFloat(queryVars.zoom) != NaN) {
-        zoom = parseFloat(queryVars.zoom);
-        controls.zoomDisplay.innerText = zoom.toFixed(3);
-    }
-
-    if (queryVars.numIterations && parseInt(queryVars.numIterations) != NaN) {
-        numIterations = parseInt(queryVars.numIterations);
-        paramUpdate(false);
-    }
+    loadFromURI(jake.getQueryVariables());
 
     return program;
 }
@@ -240,6 +273,7 @@ function draw(now) {
             center: center.serialize(),
             zoom: zoom,
             numIterations: numIterations,
+            smoothcolor: controls.smoothcolorControl.checked,
             dt: dt
         })
         .draw(program.gl.TRIANGLE_STRIP)
