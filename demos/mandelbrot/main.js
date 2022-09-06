@@ -173,6 +173,8 @@ function init() {
         copyIndicator.innerText = "Copied to URL";
     }
 
+    jake.webgl.useDebugFPSCounter();
+
     loadFromURI(jake.getQueryVariables());
 
     return program;

@@ -23,7 +23,6 @@ const minIterations = 50;
 const maxIterations = 250;
 
 /* graphics parameters */
-let screenSize = new Vector(0,0);
 let click = false;
 let center = defaults.center.copy();
 let complex = defaults.complex.copy();
@@ -45,8 +44,8 @@ function scroll(event) {
 
     let uv = screenPos
         .scalar(2)       // * 2
-        .sub(screenSize) // - [width, height]
-        .div(screenSize) // convert to clip space
+        .sub(program.screenSize) // - [width, height]
+        .div(program.screenSize) // convert to clip space
 
     uv.x *= -1;
     center.add(uv.scalar((zoom - newZoom) / (zoom * newZoom)));
@@ -59,7 +58,7 @@ function pan(event, force) {
     if (!force && !click) return;
     const { movementX, movementY } = event;
     const screenPos = new Vector(movementX, movementY);
-    let clipPos = screenPos.div(screenSize).scalar(2 / zoom);
+    let clipPos = screenPos.div(program.screenSize).scalar(2 / zoom);
     clipPos.y *= -1;
     center.sub(clipPos);
 }
@@ -184,8 +183,6 @@ function init() {
 
     loadFromURI(jake.getQueryVariables());
 
-    screenSize = new Vector(gl.canvas.width, gl.canvas.height);
-
     document.getElementById("warning-button").onclick = () => {
         document.getElementById("warning").remove();
     };
@@ -262,10 +259,10 @@ function draw(now) {
     program
         .use()
         .clear({ color: [0,0,0,1] })
-        .sizeToScreen(screenSize) /* save TO screenSize, not set FROM screenSize */
+        .sizeToScreen()
         .buffersAndAttributes()
         .uniforms({
-            screen: screenSize.serialize(),
+            screen: program.screenSize.serialize(),
             center: center.serialize(),
             c: complex.serialize(),
             zoom: zoom,
