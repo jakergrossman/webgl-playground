@@ -91,23 +91,23 @@ function save() {
 function loadFromURI(settings) {
     const { x, y } = settings;
     const xVal = parseFloat(x), yVal = parseFloat(y);
-    if (xVal && yVal) {
+    if (!(Number.isNaN(xVal) || Number.isNaN(yVal))) {
         center = new Vector(xVal, yVal);
     } else {
         center = defaults.center.copy();
     }
 
     const orderVal = parseInt(settings.order);
-    order = orderVal ? orderVal : defaults.order;
+    order = !Number.isNaN(orderVal) ? orderVal : defaults.order;
     controls.orderControl.value = order;
     controls.orderDisplay.value = order;
 
     const zoomVal = parseFloat(settings.zoom);
-    zoom = zoomVal ? zoomVal : defaults.zoom;
+    zoom = !Number.isNaN(zoomVal) ? zoomVal : defaults.zoom;
     controls.zoomDisplay.value = zoom;
 
     const iterVal = parseFloat(settings.numIterations);
-    numIterations = iterVal ? iterVal : defaults.numIterations;
+    numIterations = !Number.isNaN(iterVal) ? iterVal : defaults.numIterations;
     controls.iterationsControl.value = numIterations;
     controls.iterationsDisplay.value = numIterations;
 }
@@ -173,7 +173,6 @@ function init() {
         copyIndicator.innerText = "Copied to URL";
     }
 
-    jake.webgl.useDebugFPSCounter();
 
     loadFromURI(jake.getQueryVariables());
 

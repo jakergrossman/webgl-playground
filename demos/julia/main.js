@@ -65,21 +65,19 @@ function pan(event, force) {
 
 /* save position and redirect */
 function save() {
-    let qPos = window.location.toString().indexOf("?");
-    let URI = window.location.toString();
-    if (qPos != -1) URI = URI.slice(0, qPos);
-    URI += "?x=" + center.x;
-    URI += "&y=" + center.y;
-    URI += "&zoom=" + zoom;
-    URI += "&numIterations=" + numIterations;
-    URI += "&creal=" + complex.x;
-    URI += "&cimag=" + complex.y;
+    const URI = encodeURI(jake.createQueryURI({
+        x: center.x,
+        y: center.y,
+        numIterations: numIterations,
+        creal: complex.x,
+        cimag: complex.y,
+        zoom: zoom,
+    }));
 
-    const newURI = encodeURI(URI);
     if (!mobile) {
-        navigator.clipboard.writeText(newURI);
+        navigator.clipboard.writeText(URI);
     }
-    window.history.pushState("", "", newURI);
+    window.history.pushState("", "", URI);
 
     copyIndicator.classList.remove("hidden");
     copyIndicator.style.opacity=1.0;
@@ -88,28 +86,28 @@ function save() {
 function loadFromURI(settings) {
     const { x, y, creal, cimag } = settings;
     const xVal = parseFloat(x), yVal = parseFloat(y);
-    if (xVal && yVal) {
+    if (!(Number.isNaN(xVal) || Number.isNaN(yVal))) {
         center = new Vector(xVal, yVal);
     } else {
         center = defaults.center.copy();
     }
 
     const zoomVal = parseFloat(settings.zoom);
-    zoom = zoomVal ? zoomVal : defaults.zoom;
+    zoom = !Number.isNaN(zoomVal) ? zoomVal : defaults.zoom;
     controls.zoomDisplay.value = zoom;
 
     const iterVal = parseFloat(settings.numIterations);
-    numIterations = iterVal ? iterVal : defaults.numIterations;
+    numIterations = !Number.isNaN(iterVal) ? iterVal : defaults.numIterations;
     controls.iterationsControl.value = numIterations;
     controls.iterationsDisplay.value = numIterations;
 
     const realVal = parseFloat(creal);
-    complex.x = realVal ? realVal : defaults.complex.x
+    complex.x = !Number.isNaN(realVal) ? realVal : defaults.complex.x
     controls.crealControl.value = complex.x;
     controls.crealDisplay.value = complex.x;
 
     const imagVal = parseFloat(cimag);
-    complex.y = imagVal ? imagVal : defaults.complex.y;
+    complex.y = !Number.isNaN(imagVal) ? imagVal : defaults.complex.y;
     controls.cimagControl.value = complex.y;
     controls.cimagDisplay.value = complex.y;
 }
