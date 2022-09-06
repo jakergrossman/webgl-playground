@@ -19,7 +19,7 @@ let numIterations = defaults.numIterations;
 /* limits */
 const minZoom = 0.2;
 const maxZoom = 200000;
-const minIterations = 5;
+const minIterations = 50;
 const maxIterations = 250;
 
 /* graphics parameters */
