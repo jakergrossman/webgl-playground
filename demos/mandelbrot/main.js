@@ -23,12 +23,28 @@ const maxZoom = 200000;
 const minIterations = 5;
 const maxIterations = 995;
 const minOrder = 2;
-const maxOrder = 20;
+const maxOrder = 5;
 
 /* global state */
 const copyIndicator = document.getElementById("copy");
 let controls = null
-let program = init();
+const gl = document.getElementById("screen").getContext("webgl2");
+if (!gl) jake.webgl.notSupported();
+let programs = [2,3,4,5].map(n=> {
+    const p = new jake.webgl.Program(gl, "shaders/identity.vert", "shaders/mandelbrot" + n + ".frag");
+    const arrays = {
+        position: [
+            1.0,  1.0,
+           -1.0,  1.0,
+            1.0, -1.0,
+           -1.0, -1.0,
+        ],
+    };
+
+    p.arrays(arrays, 2);
+    return p;
+});
+init();
 
 /* handle mousewheel actions */
 function scroll(event) {
@@ -40,8 +56,8 @@ function scroll(event) {
 
     let uv = screenPos
         .scalar(2)       // * 2
-        .sub(program.screenSize) // - [width, height]
-        .div(program.screenSize) // convert to clip space
+        .sub(programs[order-2].screenSize) // - [width, height]
+        .div(programs[order-2].screenSize) // convert to clip space
 
     uv.x *= -1;
     center.add(uv.scalar((zoom - newZoom) / (zoom * newZoom)));
@@ -64,7 +80,7 @@ function pan(event, force) {
     if (!force && !click) return;
     const { movementX, movementY } = event;
     const screenPos = new Vector(movementX, movementY);
-    let clipPos = screenPos.div(program.screenSize).scalar(2 / zoom);
+    let clipPos = screenPos.div(programs[order-2].screenSize).scalar(2 / zoom);
     clipPos.y *= -1;
     center.sub(clipPos);
 }
@@ -99,17 +115,18 @@ function loadFromURI(settings) {
 
     const orderVal = parseInt(settings.order);
     order = !Number.isNaN(orderVal) ? orderVal : defaults.order;
-    controls.orderControl.value = order;
-    controls.orderDisplay.value = order;
 
     const zoomVal = parseFloat(settings.zoom);
     zoom = !Number.isNaN(zoomVal) ? zoomVal : defaults.zoom;
-    controls.zoomDisplay.value = zoom;
 
     const iterVal = parseFloat(settings.numIterations);
     numIterations = !Number.isNaN(iterVal) ? iterVal : defaults.numIterations;
-    controls.iterationsControl.value = numIterations;
-    controls.iterationsDisplay.value = numIterations;
+
+    controls.values({
+        order: order,
+        zoom: zoom,
+        iterations: numIterations,
+    });
 }
 
 /* initialize shader program, controls */
@@ -119,21 +136,6 @@ function init() {
     if (!gl) {
         jake.webgl.notSupported();
     }
-
-    // initialize WebGL2 program
-    const shaders = [ "shaders/identity.vert", "shaders/mandelbrot.frag" ];
-    const program = new jake.webgl.Program(gl, ...shaders);
-
-    const arrays = {
-        position: [
-            1.0,  1.0,
-           -1.0,  1.0,
-            1.0, -1.0,
-           -1.0, -1.0,
-        ],
-    };
-
-    program.arrays(arrays, 2);
 
     controls = new jake.webgl.ControlPanel([
         { type: "range", name: "iterations", min: minIterations, max: maxIterations, step: 1, value: numIterations },
@@ -155,7 +157,7 @@ function init() {
         if (qPos !== -1) {
             window.history.pushState("", "", window.location.toString().slice(0, qPos ));
         }
-        loadFromURI(jake.getQueryVariables());
+        loadFromURI({});
     }
 
     if (mobile) {
@@ -173,10 +175,7 @@ function init() {
         copyIndicator.innerText = "Copied to URL";
     }
 
-
     loadFromURI(jake.getQueryVariables());
-
-    return program;
 }
 
 // handle mobile drag and pinch-zoom
@@ -230,12 +229,11 @@ function pointermove(event) {
 
 let then = 0;
 function draw(now) {
-    now *= 0.1;
     const dt = now - then;
     then = now;
 
     if (controls.animateControl.checked) {
-        numIterations += Math.floor(3.5 * dt) * animDirection;
+        numIterations += Math.floor(.35 * dt) * animDirection;
 
         numIterations = jake.clamp(numIterations, minIterations, maxIterations);
         if (numIterations == minIterations) {
@@ -250,7 +248,7 @@ function draw(now) {
     /* handle copy indicator fade */
     if (!copyIndicator.classList.contains("hidden")) {
         const currentOpacity = parseFloat(copyIndicator.style.opacity);
-        const newOpacity = currentOpacity * Math.pow(0.97, dt);
+        const newOpacity = currentOpacity * Math.pow(0.97, dt/10);
         copyIndicator.style.opacity = newOpacity;
 
         if (newOpacity < 0.01) {
@@ -258,19 +256,19 @@ function draw(now) {
         }
     }
 
-    program
+    programs[order-2]
         .use()
-        .clear({ color: [0,0,0,1] })
+        .clear({ color: [0.0625,0.0625,0.0625,1] })
         .sizeToScreen()
         .buffersAndAttributes()
         .uniforms({
-            screen: program.screenSize.serialize(),
+            screen: programs[order-2].screenSize.serialize(),
             center: center.serialize(),
             order: order,
             zoom: zoom,
             numIterations: numIterations,
         })
-        .draw(program.gl.TRIANGLE_STRIP)
+        .draw(programs[order-2].gl.TRIANGLE_STRIP)
         .glError(err => {
             throw new Error("WebGL2 Rendering Error: " + err);
         });

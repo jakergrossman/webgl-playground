@@ -10,16 +10,11 @@ uniform float order;
 out vec4 color;
 
 #define PI 3.141592653589793
-
-/* https://math.stackexchange.com/questions/534695/raising-a-complex-number-to-a-decimal-value */
-vec2 cpow(vec2 base, float n) {
-    float r = length(base);
-    float theta = r == 0.0 ? 0.0 : atan(base.y, base.x);
+vec2 pow3(vec2 c) {
     return vec2(
-            cos(n * theta) * pow(r, n),
-            sin(n * theta) * pow(r, n));
+            c.x*c.x*c.x - 3.0*c.x*c.y*c.y,
+            3.0*c.x*c.x*c.y - c.y*c.y*c.y);
 }
-
 int mandelbrot(vec2 pos) {
     // skip some computation inside first period component
     // section: internal bound
@@ -28,7 +23,7 @@ int mandelbrot(vec2 pos) {
     float a = (1.0 / pow(order, 1.0 / (order - 1.0)));
     float b = (1.0 / pow(order, order / (order - 1.0)));
     float r = a - b;
-    if (dot(pos, pos) < r*r) return -1;
+    if (dot(pos, pos) < r*r) discard;
 
     // section: external bound
     // https://iquilezles.org/articles/mset1bulb/
@@ -36,14 +31,13 @@ int mandelbrot(vec2 pos) {
 
     vec2 z;
     for (int i = 0; i < numIterations; i++) {
-        z = cpow(z, order) + pos;
-
+        z = pow3(z) + pos;
         if (dot(z,z) > Q*Q) {
             return i;
         }
     }
     
-    return -1;
+    discard;
 }
 
 /* From http://iquilezles.org/www/articles/palettes/palettes.htm */
@@ -72,16 +66,12 @@ void main() {
     vec2 transform = (clip + center) * vec2(aspect, 1.0);
 
     int iterations = mandelbrot(transform);
-    if (iterations == -1) {
-        color = vec4(0.0625, 0.0625, 0.0625, 1.0);
-    } else {
-        float t = float(iterations) / float(numIterations);
-        color = vec4(
-            palette(t,
-                    vec3(0.5,0.5,0.5),
-                    vec3(0.5,0.5,0.5),
-                    vec3(1.0,0.7,0.4),
-                    vec3(0.0,0.15,0.20)),
-                    1.0);
-    }
+    float t = float(iterations) / float(numIterations);
+    color = vec4(
+        palette(t,
+                vec3(0.5,0.5,0.5),
+                vec3(0.5,0.5,0.5),
+                vec3(1.0,0.7,0.4),
+                vec3(0.0,0.15,0.20)),
+                1.0);
 }

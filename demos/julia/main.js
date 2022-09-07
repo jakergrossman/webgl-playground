@@ -94,22 +94,22 @@ function loadFromURI(settings) {
 
     const zoomVal = parseFloat(settings.zoom);
     zoom = !Number.isNaN(zoomVal) ? zoomVal : defaults.zoom;
-    controls.zoomDisplay.value = zoom;
 
     const iterVal = parseFloat(settings.numIterations);
     numIterations = !Number.isNaN(iterVal) ? iterVal : defaults.numIterations;
-    controls.iterationsControl.value = numIterations;
-    controls.iterationsDisplay.value = numIterations;
 
     const realVal = parseFloat(creal);
-    complex.x = !Number.isNaN(realVal) ? realVal : defaults.complex.x
-    controls.crealControl.value = complex.x;
-    controls.crealDisplay.value = complex.x;
+    complex.x = !Number.isNaN(realVal) ? realVal : defaults.complex.x;
 
     const imagVal = parseFloat(cimag);
     complex.y = !Number.isNaN(imagVal) ? imagVal : defaults.complex.y;
-    controls.cimagControl.value = complex.y;
-    controls.cimagDisplay.value = complex.y;
+
+    controls.values({
+        zoom: zoom.toFixed(3),
+        iterations: numIterations,
+        creal: complex.x.toFixed(4),
+        cimag: complex.y.toFixed(4),
+    });
 }
 
 /* initialize shader program, controls */
