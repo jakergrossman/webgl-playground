@@ -63,6 +63,7 @@ function scroll(event) {
     center.add(uv.scalar((zoom - newZoom) / (zoom * newZoom)));
     zoom = newZoom;
     controls.zoomDisplay.innerText = zoom.toFixed(3);
+    controls.centerDisplay.innerText = formatCenter();
 }
 
 /* handle param update */
@@ -83,6 +84,7 @@ function pan(event, force) {
     let clipPos = screenPos.div(programs[order-2].screenSize).scalar(2 / zoom);
     clipPos.y *= -1;
     center.sub(clipPos);
+    controls.centerDisplay.innerText = formatCenter();
 }
 
 /* save position and redirect */
@@ -122,11 +124,12 @@ function loadFromURI(settings) {
     const iterVal = parseFloat(settings.numIterations);
     numIterations = !Number.isNaN(iterVal) ? iterVal : defaults.numIterations;
 
-    controls.values({
+    controls.values = {
         order: order,
         zoom: zoom,
+        center: formatCenter(),
         iterations: numIterations,
-    });
+    };
 }
 
 /* initialize shader program, controls */
@@ -141,6 +144,7 @@ function init() {
         { type: "range", name: "iterations", min: minIterations, max: maxIterations, step: 1, value: numIterations },
         { type: "range", name: "order", min: minOrder, max: maxOrder, step: 1, value: minOrder },
         { type: "info", name: "zoom", text: zoom },
+        { type: "info", name: "center", text: formatCenter() },
         { type: "checkbox", name: "animate" },
         { type: "divider" },
         { type: "button", name: "save" },
@@ -225,6 +229,10 @@ function pointermove(event) {
         prevDiff = curDiff;
         mobileDebounce = (++mobileDebounce) % 3;
     }
+}
+
+function formatCenter(digits=8) {
+    return "(" + center.serialize().map(n=>n.toFixed(digits)) + ")";
 }
 
 let then = 0;

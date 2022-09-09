@@ -51,6 +51,7 @@ function scroll(event) {
     center.add(uv.scalar((zoom - newZoom) / (zoom * newZoom)));
     zoom = newZoom;
     controls.zoomDisplay.innerText = zoom.toFixed(3);
+    controls.centerDisplay.innerText = formatCenter();
 }
 
 /* handle dragging */
@@ -61,6 +62,7 @@ function pan(event, force) {
     let clipPos = screenPos.div(program.screenSize).scalar(2 / zoom);
     clipPos.y *= -1;
     center.sub(clipPos);
+    controls.centerDisplay.innerText = formatCenter();
 }
 
 /* save position and redirect */
@@ -104,12 +106,13 @@ function loadFromURI(settings) {
     const imagVal = parseFloat(cimag);
     complex.y = !Number.isNaN(imagVal) ? imagVal : defaults.complex.y;
 
-    controls.values({
+    controls.values = {
         zoom: zoom.toFixed(3),
         iterations: numIterations,
+        center: formatCenter(),
         creal: complex.x.toFixed(4),
         cimag: complex.y.toFixed(4),
-    });
+    };
 }
 
 /* initialize shader program, controls */
@@ -138,6 +141,7 @@ function init() {
     controls = new jake.webgl.ControlPanel([
         { type: "range", name: "iterations", min: minIterations, max: maxIterations, step: 1, value: numIterations },
         { type: "info", name: "zoom", text: zoom },
+        { type: "info", name: "center", text: formatCenter() },
         { type: "divider" },
         { type: "range", name: "creal", min: -4, max: 4, step: 0.0001, value: complex.x },
         { type: "range", name: "cimag", min: -4, max: 4, step: 0.0001, value: complex.y },
@@ -235,6 +239,10 @@ function pointermove(event) {
         prevDiff = curDiff;
         mobileDebounce = (++mobileDebounce) % 3;
     }
+}
+
+function formatCenter(digits=8) {
+    return "(" + center.serialize().map(n=>n.toFixed(digits)) + ")";
 }
 
 let then = 0;
