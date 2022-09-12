@@ -33,7 +33,7 @@ program
     .uniforms({
         zDepth: 0.0,
         seed: jake.rand(0, 100),
-        ...controls.values(),
+        ...controls.values,
     }, false);
 
 let zspeed = 0.03;
@@ -42,7 +42,7 @@ controls.form.oninput = updateParameters;
 
 function updateParameters() {
     zspeed = parseFloat(controls.zspeedControl.value),
-    program.uniforms(controls.values(), false);
+    program.uniforms(controls.values, false);
 
     controls.octavesDisplay.innerText = program.uniformInfo.octaves;
     controls.persistenceDisplay.innerText = program.uniformInfo.persistence;

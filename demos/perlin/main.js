@@ -32,7 +32,7 @@ program
     .arrays(arrays, 2)
     .uniforms({
         zDepth: 0,
-        ...controls.values()
+        ...controls.values
     }, false);
 
 
