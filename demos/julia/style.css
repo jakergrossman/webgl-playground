@@ -59,9 +59,20 @@ canvas:active {
 }
 
 #warning-button {
-    position: absolute;
-    top: 5px;
-    right: 20px;
-    color: white;
+    background: white;
+    color: black;
     cursor: pointer;
+    border: 2px solid white;
+    border-radius: 10px;
+    padding: 0.5em;
+    margin: 0.5em;
+
+    transition: 0.25s ease-in-out;
+}
+
+#warning-button:hover {
+    border: 2px solid white;
+    background: black;
+    color: white;
+    text-decoration: underline;
 }

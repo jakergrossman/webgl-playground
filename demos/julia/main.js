@@ -32,8 +32,6 @@ const copyIndicator = document.getElementById("copy");
 let controls = null
 let program = init();
 
-requestAnimationFrame(draw);
-
 /* handle mousewheel actions */
 function scroll(event) {
     event.preventDefault();
@@ -187,6 +185,9 @@ function init() {
 
     document.getElementById("warning-button").onclick = () => {
         document.getElementById("warning").remove();
+
+        // don't even attempt to draw until warning is accepted
+        requestAnimationFrame(draw);
     };
 
     return program;
