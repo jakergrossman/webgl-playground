@@ -49,8 +49,9 @@ program
     .arrays(arrays)
     .uniforms(uniforms, false);
 
+const randTimeOffset = jake.rand(0,100000); // 0-1000 seconds
 function render(time) {
-    time *= 0.001; // seconds
+    time = (time + randTimeOffset) * 0.001; // seconds
 
     twgl.resizeCanvasToDisplaySize(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
