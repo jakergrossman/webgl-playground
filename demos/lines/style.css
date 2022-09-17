@@ -87,3 +87,17 @@ a:hover {
 #me a {
     text-align: center;
 }
+
+.underlined {
+    transition: 0.2s ease-in-out;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    -moz-text-decoration-color: transparent;
+    -webkit-text-decoration-color: transparent;
+}
+
+.underlined:hover {
+    text-decoration-color: white;
+    -moz-text-decoration-color: white;
+    -webkit-text-decoration-color: white;
+}
